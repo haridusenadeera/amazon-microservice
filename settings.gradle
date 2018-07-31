@@ -1,0 +1,5 @@
+rootProject.name = 'amazon'
+include "applications/account"
+include "applications/order"
+include "applications/shipment"
+include "applications/product"
