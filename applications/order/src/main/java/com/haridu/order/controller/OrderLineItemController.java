@@ -1,10 +1,8 @@
 package com.haridu.order.controller;
 
-import com.haridu.order.entity.Order;
 import com.haridu.order.entity.OrderLineItem;
 import com.haridu.order.entity.OrderLineItemList;
 import com.haridu.order.repository.OrderLineItemRepository;
-import com.netflix.discovery.converters.Auto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.HttpStatus;

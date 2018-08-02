@@ -20,7 +20,7 @@ public class ProductService {
     return restTemplate.getForEntity(url, Product.class).getBody();
   }
 
-  public Product productFallback(long productId, Throwable throwable) {
+  public Product productFallback(long productId) {
     Product product = new Product();
     product.setName("Product-Name-Placeholder");
     return product;
