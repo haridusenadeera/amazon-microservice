@@ -27,4 +27,6 @@ public class Shipment {
   private Date shippedDate;
 
   private Date deliveryDate;
+
+  private long orderNumber;
 }

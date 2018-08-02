@@ -1,13 +1,12 @@
 package com.haridu.shipment.controller;
 
 import com.haridu.shipment.entity.Shipment;
+import com.haridu.shipment.entity.ShipmentDetails;
 import com.haridu.shipment.repository.ShipmentRepository;
+import com.haridu.shipment.service.ShipmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -15,15 +14,22 @@ import java.util.List;
 public class ShipmentController {
 
   @Autowired
-  private ShipmentRepository shipmentRepository;
+  private ShipmentService shipmentService;
 
   @RequestMapping(value = "/shipments", method = RequestMethod.GET)
-  public @ResponseBody List<Shipment> getAllShipments(
+  public @ResponseBody List<?> getAllShipments(
       @RequestParam(value = "accountId", required = false) Long accountId) {
 
     if(accountId != null){
-      return shipmentRepository.findByAccountIdOrderByDeliveryDate(accountId);
+      return shipmentService.getShipmentsByAccountId(accountId);
     }
-    return shipmentRepository.findAll();
+    return shipmentService.getAllShipments();
   }
+
+//  @RequestMapping(value = "shipments/{id}", method = RequestMethod.GET)
+//  public @ResponseBody ShipmentDetails getShipmentDetails(
+//      @PathVariable(name = "id") Long shipmentId) {
+//
+//    return shipmentService.retrieveShipmentDetails(shipmentId);
+//  }
 }

@@ -3,12 +3,12 @@ package com.haridu.order.service;
 import com.haridu.order.entity.*;
 import com.haridu.order.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -17,7 +17,13 @@ public class OrderService {
   private OrderRepository orderRepository;
 
   @Autowired
-  RestTemplate restTemplate;
+  private ProductService productService;
+
+  @Autowired
+  private AddressService addressService;
+
+  @Autowired
+  private ShipmentService shipmentService;
 
   public OrderDetails retrieveDetailsForOrder(long orderNumber){
 
@@ -32,7 +38,9 @@ public class OrderService {
 
     orderDetails.setOrderNumber(order.getOrderNumber());
     orderDetails.setTotalPrice(order.getTotalPrice());
-    orderDetails.setShippingAddress(getShippingAddressById(order.getShippingAddressId()));
+    orderDetails.setShippingAddress(
+        addressService.getShippingAddressById(order.getShippingAddressId())
+    );
 
     // for each orderLineItems in an order,
     // get productId from OrderLineItem object and call product service to get the product name
@@ -54,7 +62,7 @@ public class OrderService {
 
       // call product service to get the product name
       lineItem.setProductName(
-          getNameByProductId(orderLineItem.getProductId())
+          productService.getNameByProductId(orderLineItem.getProductId()).getName()
       );
 
       lineItems.add(lineItem);
@@ -85,7 +93,7 @@ public class OrderService {
 
       // to get the delivery date and shipped date, call the shipment service
       ShipmentDAO shipmentDAO;
-      shipmentDAO = getShipmentById(key);
+      shipmentDAO = shipmentService.getShipmentById(key);
 
       if (shipmentDAO != null) {
         shipment.setDeliveryDate(shipmentDAO.getDeliveryDate());
@@ -101,47 +109,12 @@ public class OrderService {
     return orderDetails;
   }
 
-  private ShipmentDAO getShipmentById(long shipmentId) {
-    String url = "//shipment/shipments/" + shipmentId;
-
-    ResponseEntity<ShipmentDAO> response;
-
-    try {
-      response = restTemplate.getForEntity(url, ShipmentDAO.class);
-      return Objects.requireNonNull(response.getBody());
-    } catch (RestClientException e) {
-      e.printStackTrace();
-      return null;
-    }
+  public List<Order> findByAccountId(long accountId) {
+    return orderRepository.findByAccountIdOrderByDate(accountId);
   }
 
-  private String getNameByProductId(long productId) {
-
-    String url = "//product/products/" + productId;
-
-    ResponseEntity<Product> response;
-
-    try {
-      response = restTemplate.getForEntity(url, Product.class);
-      return Objects.requireNonNull(response.getBody()).getName();
-    } catch (RestClientException e) {
-      e.printStackTrace();
-      return null;
-    }
+  public List<Order> getAllOrders() {
+    return orderRepository.findAllByOrderByOrderNumber();
   }
 
-  private Address getShippingAddressById(long id){
-
-    String url = "//account/addresses/" + id;
-
-    ResponseEntity<Address> response;
-
-    try {
-      response = restTemplate.getForEntity(url, Address.class);
-      return response.getBody();
-    } catch (RestClientException e) {
-      e.printStackTrace();
-      return null;
-    }
-  }
 }
