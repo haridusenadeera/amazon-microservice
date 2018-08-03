@@ -1,5 +1,10 @@
 pipeline {
    agent any
+   environment {
+      CFAPI = 'https://api.run.pivotal.io'
+      CFUSERNAME = credentials('PCFUSER')
+      CFPASS = credentials('PCFPASS')
+    }
    stages {
        stage('Build') {
            steps {
